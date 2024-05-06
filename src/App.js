@@ -1,25 +1,51 @@
-import logo from './logo.svg';
+import React from 'react';
+import { Button } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllUsersFromServer } from './redux/slices/userSlice';
+import { increment, decrement } from './redux/slices/counterSlice';
+import { BeatLoader } from 'react-spinners';
 import './App.css';
 
-function App() {
+const App = () => {
+  const users = useSelector((state) => state.users.users);
+  const count = useSelector((state) => state.counter.count);
+  const isLoading = useSelector((state) => state.users.isLoading);
+
+  const dispatch = useDispatch();
+
+  const handleIncrement = () => {
+    dispatch(increment());
+  };
+
+  const handleDecrement = () => {
+    dispatch(decrement());
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {users.map((user) => (
+        <div key={user.id}>
+          <h2>{user.name}</h2>
+          <h3>{user.email}</h3>
+          <h3>{user.phone}</h3>
+          <p>{user.website}</p>
+        </div>
+      ))}
+
+      <Button onClick={() => dispatch(getAllUsersFromServer(count))}>
+        {isLoading ? (
+          <>
+            <span>Loading User...</span>
+            <BeatLoader />
+          </>
+        ) : (
+          'Get User'
+        )}
+      </Button>
+      <Button onClick={handleIncrement}>Increment</Button>
+      <Button onClick={handleDecrement}>Decrement</Button>
     </div>
   );
-}
+};
 
 export default App;
